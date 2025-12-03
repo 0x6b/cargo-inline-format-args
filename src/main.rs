@@ -6,6 +6,7 @@ use std::{
 fn main() -> ExitCode {
     Command::new("cargo")
         .arg("clippy")
+        .arg("--fix")
         .args(args().skip(2))
         .args(["--", "-A", "clippy::all", "-W", "clippy::uninlined_format_args"])
         .status()

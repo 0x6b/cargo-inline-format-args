@@ -1,6 +1,6 @@
 # cargo-inline-format-args
 
-A cargo subcommand that runs `cargo clippy -- -A clippy::all -W clippy::uninlined_format_args`.
+A cargo subcommand that runs `cargo clippy --fix -- -A clippy::all -W clippy::uninlined_format_args`.
 
 ```console
 $ cargo inline-format-args [clippy options...]
