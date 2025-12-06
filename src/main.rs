@@ -2,9 +2,28 @@ use std::{
     env::{args, temp_dir},
     fs::{remove_file, write},
     process::{Command, ExitCode},
+    sync::LazyLock,
 };
 
-const CLIPPY_CONF: &str = "allow-mixed-uninlined-format-args = false\n";
+const CLIPPY_CONF: &str = "
+allow-mixed-uninlined-format-args = false
+";
+
+const LINT_RULES: &str = "
+clippy::uninlined_format_args
+";
+
+static LINT_ARGS: LazyLock<Vec<&str>> = LazyLock::new(|| {
+    let mut args = vec!["--", "--allow", "clippy::all"];
+    for lint in LINT_RULES
+        .lines()
+        .map(str::trim)
+        .filter(|s| !s.is_empty() && !s.starts_with('#') && !s.starts_with("//"))
+    {
+        args.extend(["--warn", lint]);
+    }
+    args
+});
 
 fn main() -> ExitCode {
     let conf = temp_dir().join("clippy.toml");
@@ -18,7 +37,7 @@ fn main() -> ExitCode {
         .arg("--no-deps")
         .arg("--fix")
         .args(args().skip(2)) // skip "cargo inline-format-args"
-        .args(["--", "--allow", "clippy::all", "--warn", "clippy::uninlined_format_args"])
+        .args(LINT_ARGS.iter())
         .env("CLIPPY_CONF_DIR", temp_dir())
         .status();
 
