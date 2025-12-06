@@ -15,9 +15,10 @@ fn main() -> ExitCode {
 
     let result = Command::new("cargo")
         .arg("clippy")
+        .arg("--no-deps")
         .arg("--fix")
         .args(args().skip(2)) // skip "cargo inline-format-args"
-        .args(["--", "-A", "clippy::all", "-W", "clippy::uninlined_format_args"])
+        .args(["--", "--allow", "clippy::all", "--warn", "clippy::uninlined_format_args"])
         .env("CLIPPY_CONF_DIR", temp_dir())
         .status();
 
