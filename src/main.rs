@@ -14,15 +14,16 @@ clippy::uninlined_format_args
 ";
 
 static LINT_ARGS: LazyLock<Vec<&str>> = LazyLock::new(|| {
-    let mut args = vec!["--", "--allow", "clippy::all"];
-    for lint in LINT_RULES
-        .lines()
-        .map(str::trim)
-        .filter(|s| !s.is_empty() && !s.starts_with('#') && !s.starts_with("//"))
-    {
-        args.extend(["--warn", lint]);
-    }
-    args
+    ["--", "--allow", "clippy::all"]
+        .into_iter()
+        .chain(
+            LINT_RULES
+                .lines()
+                .map(str::trim)
+                .filter(|s| !s.is_empty() && !s.starts_with('#') && !s.starts_with("//"))
+                .flat_map(|lint| ["--warn", lint]),
+        )
+        .collect()
 });
 
 fn main() -> ExitCode {
